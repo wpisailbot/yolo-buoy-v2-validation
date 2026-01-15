@@ -394,7 +394,7 @@ class MainWindow(QMainWindow):
         ]
         if self.last_infer is not None and self.last_infer.image_path == p:
             parts.append(f"Detections: {self.last_infer.det_count}")
-            parts.append(f"Detected score (max conf): {self.last_infer.conf_max:.3f}")
+            parts.append(f"Detected: {1 if self.last_infer.det_count > 0 else 0}")
             parts.append(f"Certainty avg: {self.last_infer.conf_avg:.3f}")
         else:
             parts.append("Detections: (running…)")
@@ -505,7 +505,7 @@ class MainWindow(QMainWindow):
             )
             return
 
-        buoy_detected = float(self.last_infer.conf_max) if self.last_infer is not None else 0.0
+        buoy_detected = 1.0 if (self.last_infer is not None and self.last_infer.det_count > 0) else 0.0
         certainty_avg = float(self.last_infer.conf_avg) if self.last_infer is not None else 0.0
 
         self.store.upsert(
@@ -516,7 +516,7 @@ class MainWindow(QMainWindow):
         )
 
         self.current_label.setText(
-            f"Saved label: image_number={n}, buoy_actual={buoy_actual}, buoy_detected={buoy_detected:.3f}, certainty_avg={certainty_avg:.3f}"
+            f"Saved label: image_number={n}, buoy_actual={buoy_actual}, buoy_detected={int(buoy_detected)}, certainty_avg={certainty_avg:.3f}"
         )
         self.meta_label.setText(self._status_text())
 
